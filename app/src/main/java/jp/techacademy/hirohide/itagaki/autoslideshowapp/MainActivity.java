@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }else{
                     View view = (View) findViewById(android.R.id.content);
                     Snackbar.make(view, "外部ストレージの読み込み許可が必要です", Snackbar.LENGTH_INDEFINITE).show();
+                    checkPermissions();
                 }
                 break;
             default:
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 getPlayInfo();
             }
     }
-    
+
     private void getNextInfo() {
         if (cursor.moveToNext()) {
             int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
