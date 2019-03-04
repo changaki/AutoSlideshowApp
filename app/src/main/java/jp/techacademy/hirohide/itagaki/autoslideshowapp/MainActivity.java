@@ -3,6 +3,7 @@ package jp.techacademy.hirohide.itagaki.autoslideshowapp;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.AbstractCursor;
 import android.database.Cursor;
@@ -11,7 +12,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -59,17 +62,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     getContentsInfo();
                 }else{
                     View view = (View) findViewById(android.R.id.content);
-                    Snackbar.make(view, "外部ストレージの読み込み許可が必要です", Snackbar.LENGTH_INDEFINITE).show();
-                    checkPermissions();
+                    Snackbar mySnackBar = Snackbar.make(view, "画像を表示するには、\n外部ストレージの読み込み許可が必要です", Snackbar.LENGTH_INDEFINITE);
+                    mySnackBar.setAction("OK!", new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View v) {
+                            checkPermissions();
+                            appConfig();
+                        }
+                    });
+                    mySnackBar.show();
                 }
                 break;
             default:
-                break;
+                break;        }
+    }
+    public void appConfig(){
+        //「今後は確認しない」がチェックされた場合、アプリ設定画面を表示する
+        if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_EXTERNAL_STORAGE)==false){
+            String uriString = "package:" + getPackageName();
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString));
+            startActivity(intent);
         }
     }
     public void checkPermissions(){
+        // パーミッションの許可状態を確認する
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // パーミッションの許可状態を確認する
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 // 許可されている
                 getContentsInfo();
